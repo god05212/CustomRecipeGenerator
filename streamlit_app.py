@@ -1,6 +1,7 @@
 import os
 import streamlit as st
 import openai
+from openai import OpenAI
 
 # ─────────────────────────────────────────────────────────
 # API 키 입력 및 설정
