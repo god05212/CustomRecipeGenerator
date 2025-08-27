@@ -1,6 +1,6 @@
 import os
 import streamlit as st
-from openai import OpenAI
+import openai
 
 # 페이지 기본 설정
 st.set_page_config(page_title="💡 분야별 아이디어 생성기", page_icon="💡", layout="wide")
