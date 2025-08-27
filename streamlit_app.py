@@ -1,5 +1,3 @@
-%%writefile app.py
-# 파일명: app.py
 import streamlit as st
 
 aurora_html = """
