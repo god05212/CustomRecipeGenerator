@@ -29,9 +29,9 @@ ingredients = st.text_area(
 )
 
 # API 호출을 모킹
-def mock_openai_chat_completion_create(*args, **kwargs):
+def mock_openai_completions_create(*args, **kwargs):
     return {
-        'choices': [{'message': {'content': '요리 이름: 팬케이크\n\n재료: 계란, 밀가루, 우유, 설탕\n\n조리법:\n1. 계란을 풀고 우유를 섞는다.\n2. 밀가루를 넣고 반죽을 만든다.\n3. 팬에 부쳐서 팬케이크를 만든다.'}}]
+        'choices': [{'text': '요리 이름: 팬케이크\n\n재료: 계란, 밀가루, 우유, 설탕\n\n조리법:\n1. 계란을 풀고 우유를 섞는다.\n2. 밀가루를 넣고 반죽을 만든다.\n3. 팬에 부쳐서 팬케이크를 만든다.'}]
     }
 
 # 버튼을 눌렀을 때
@@ -56,16 +56,16 @@ if st.button("레시피 생성하기") and ingredients.strip():
         """
 
         try:
-            # openai.ChatCompletion.create를 모킹된 함수로 대체
-            with patch.object(openai, 'ChatCompletion.create', mock_openai_chat_completion_create):
-                response = openai.ChatCompletion.create(
+            # openai.completions.create를 모킹된 함수로 대체
+            with patch.object(openai, 'completions.create', mock_openai_completions_create):
+                response = openai.completions.create(
                     model="gpt-3.5-turbo",  # 사용할 모델 (예: gpt-3.5-turbo)
-                    messages=[{"role": "user", "content": prompt}],
+                    prompt=prompt,
                     max_tokens=500,
                     temperature=0.7
                 )
 
-            result = response['choices'][0]['message']['content'].strip()  # 새로운 응답 구조
+            result = response['choices'][0]['text'].strip()  # 새로운 응답 구조
             st.success("✅ 레시피 생성 완료!")
             st.markdown(result)
 
