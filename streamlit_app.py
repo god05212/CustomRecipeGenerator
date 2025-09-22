@@ -56,10 +56,10 @@ if st.button("레시피 생성하기") and ingredients.strip():
         """
 
         try:
-            # openai.completions.create를 모킹된 함수로 대체
-            with patch.object(openai, 'completions.create', mock_openai_completions_create):
-                response = openai.completions.create(
-                    model="gpt-3.5-turbo",
+            # openai.Completion.create를 모킹된 함수로 대체
+            with patch.object(openai, 'Completion.create', mock_openai_completions_create):
+                response = openai.Completion.create(
+                    model="text-davinci-003",  # 모델을 선택하세요
                     prompt=prompt,
                     max_tokens=500,
                     temperature=0.7
