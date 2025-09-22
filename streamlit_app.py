@@ -43,15 +43,15 @@ if st.button("레시피 생성하기") and ingredients.strip():
         """
 
         try:
-            # 최신 API 방식으로 모델과 프롬프트 명확하게 전달
-            response = openai.Completion.create(  # 모델 호출
-                model="gpt-3.5-turbo",  # 원하는 모델 사용
-                prompt=prompt,  # 생성할 텍스트
-                max_tokens=500,  # 출력 길이
-                temperature=0.7  # 창의성 정도
+            # 최신 API 호출 방식 (ChatCompletion)
+            response = openai.ChatCompletion.create(
+                model="gpt-3.5-turbo",  # 또는 원하는 모델
+                messages=[{"role": "user", "content": prompt}],  # 메시지 형식으로 전달
+                max_tokens=500,
+                temperature=0.7
             )
 
-            result = response['choices'][0]['text'].strip()  # 응답 처리
+            result = response['choices'][0]['message']['content'].strip()  # 응답 처리
             st.success("✅ 레시피 생성 완료!")
             st.markdown(result)
 
