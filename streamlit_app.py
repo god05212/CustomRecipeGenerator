@@ -48,14 +48,14 @@ if st.button("레시피 생성하기") and ingredients.strip():
         """
 
         try:
-            response = openai.Completion.create(  # 최신 방식으로 수정
-                model="gpt-3.5-turbo",
+            response = openai.completions.create(  # 최신 방식으로 수정
+                model="gpt-3.5-turbo",  # 또는 다른 모델을 선택할 수 있습니다.
                 prompt=prompt,
-                temperature=0.7,
-                max_tokens=500
+                max_tokens=500,
+                temperature=0.7
             )
 
-            result = response.choices[0].text.strip()
+            result = response['choices'][0]['text'].strip()  # 새로운 응답 구조
             st.success("✅ 레시피 생성 완료!")
             st.markdown(result)
 
