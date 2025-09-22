@@ -1,17 +1,12 @@
-import os
-import streamlit as st
 import openai
+import streamlit as st
 
-# ─────────────────────────────────────────────────────────
-# API 키 입력 및 설정
-# ─────────────────────────────────────────────────────────
 # 사용자로부터 API 키 입력 받기
 api_key = st.text_input("🔑 OpenAI API Key를 입력하세요:", type="password")
 
-# API 키가 입력되었는지 확인
 if not api_key:
     st.warning("OpenAI API 키를 입력해주세요.")
-    st.stop()  # API 키 없으면 앱 실행 중지
+    st.stop()
 
 # OpenAI API 키 설정
 openai.api_key = api_key
@@ -48,15 +43,15 @@ if st.button("레시피 생성하기") and ingredients.strip():
         """
 
         try:
-            # 최신 방식으로 API 호출 (ChatCompletion 사용)
-            response = openai.ChatCompletion.create(
-                model="gpt-3.5-turbo",  # gpt-3.5-turbo 또는 다른 모델 선택 가능
+            # 최신 방식으로 API 호출 (1.0.0 이상에서는 `openai.completions.create`는 없음)
+            response = openai.completions.create(
+                model="gpt-3.5-turbo",
                 messages=[{"role": "user", "content": prompt}],
                 max_tokens=500,
                 temperature=0.7
             )
 
-            result = response['choices'][0]['message']['content'].strip()  # 응답 처리
+            result = response['choices'][0]['text'].strip()
             st.success("✅ 레시피 생성 완료!")
             st.markdown(result)
 
