@@ -48,14 +48,14 @@ if st.button("레시피 생성하기") and ingredients.strip():
         """
 
         try:
-            response = openai.ChatCompletion.create(  # ✅ 최신 방식
+            response = openai.Completion.create(  # 최신 방식으로 수정
                 model="gpt-3.5-turbo",
-                messages=[{"role": "user", "content": prompt}],
+                prompt=prompt,
                 temperature=0.7,
                 max_tokens=500
             )
 
-            result = response.choices[0].message.content
+            result = response.choices[0].text.strip()
             st.success("✅ 레시피 생성 완료!")
             st.markdown(result)
 
