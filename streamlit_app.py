@@ -1,7 +1,6 @@
 import os
 import streamlit as st
 import openai
-from openai import OpenAI
 
 # ─────────────────────────────────────────────────────────
 # API 키 입력 및 설정
@@ -14,11 +13,8 @@ if not api_key:
     st.warning("OpenAI API 키를 입력해주세요.")
     st.stop() # API 키 없으면 앱 실행 중지
 
-try:
-    client = OpenAI(api_key=api_key)
-except Exception as e:
-    st.error(f"❌ API 키 설정 중 오류 발생: {e}")
-    st.stop()
+# OpenAI API 키 설정
+openai.api_key = api_key
 
 # Streamlit 앱 설정
 st.set_page_config(page_title="맞춤형 레시피 생성기", page_icon="🍳")
@@ -52,7 +48,7 @@ if st.button("레시피 생성하기") and ingredients.strip():
         """
 
         try:
-            response = openai.chat.completions.create(  # ✅ 최신 방식
+            response = openai.ChatCompletion.create(  # ✅ 최신 방식
                 model="gpt-3.5-turbo",
                 messages=[{"role": "user", "content": prompt}],
                 temperature=0.7,
