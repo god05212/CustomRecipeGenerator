@@ -1,15 +1,24 @@
-import openai
+import os
 import streamlit as st
+import openai
+from openai import OpenAI
 
+# ─────────────────────────────────────────────────────────
+# API 키 입력 및 설정
+# ─────────────────────────────────────────────────────────
 # 사용자로부터 API 키 입력 받기
 api_key = st.text_input("🔑 OpenAI API Key를 입력하세요:", type="password")
 
+# API 키가 입력되었는지 확인
 if not api_key:
     st.warning("OpenAI API 키를 입력해주세요.")
-    st.stop()
+    st.stop() # API 키 없으면 앱 실행 중지
 
-# OpenAI API 키 설정
-openai.api_key = api_key
+try:
+    client = OpenAI(api_key=api_key)
+except Exception as e:
+    st.error(f"❌ API 키 설정 중 오류 발생: {e}")
+    st.stop()
 
 # Streamlit 앱 설정
 st.set_page_config(page_title="맞춤형 레시피 생성기", page_icon="🍳")
@@ -43,19 +52,18 @@ if st.button("레시피 생성하기") and ingredients.strip():
         """
 
         try:
-            # 최신 API 호출 방식 (ChatCompletion)
-            response = openai.ChatCompletion.create(
-                model="gpt-3.5-turbo",  # 또는 원하는 모델
-                messages=[{"role": "user", "content": prompt}],  # 메시지 형식으로 전달
-                max_tokens=500,
-                temperature=0.7
+            response = openai.chat.completions.create(  # ✅ 최신 방식
+                model="gpt-3.5-turbo",
+                messages=[{"role": "user", "content": prompt}],
+                temperature=0.7,
+                max_tokens=500
             )
 
-            result = response['choices'][0]['message']['content'].strip()  # 응답 처리
+            result = response.choices[0].message.content
             st.success("✅ 레시피 생성 완료!")
             st.markdown(result)
 
         except Exception as e:
             st.error(f"❌ 레시피 생성 중 오류 발생:\n\n{e}")
 else:
-    st.info("좌측에 재료를 입력한 후, '레시피 생성하기' 버튼을 눌러주세요.")
+    st.info("재료를 입력한 후, '레시피 생성하기' 버튼을 눌러주세요.")
