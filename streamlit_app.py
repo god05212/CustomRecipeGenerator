@@ -1,28 +1,27 @@
 import streamlit as st
 import google.generativeai as genai
 
-# Streamlit 앱 설정
+# 페이지 설정
 st.set_page_config(page_title="맞춤형 레시피 생성기", page_icon="🍳")
 st.title("🍳 맞춤형 레시피 생성기")
 st.write("입력한 재료로 만들 수 있는 요리와 단계별 레시피를 생성해드립니다.")
 
 # API 키 입력
-api_key = st.text_input("🔑 Google Gemini API Key를 입력하세요:", type="password")
-
+api_key = st.text_input("🔑 Google Cloud Gemini API 키를 입력하세요:", type="password")
 if not api_key:
-    st.warning("Gemini API 키를 입력해주세요.")
+    st.warning("API 키를 입력해주세요.")
     st.stop()
 
 # Gemini API 설정
 genai.configure(api_key=api_key)
 
-# 사용자 입력
+# 사용자 재료 입력
 ingredients = st.text_area(
     "📝 사용하고 싶은 재료를 입력하세요 (쉼표로 구분)",
     placeholder="예: 계란, 우유, 밀가루, 설탕"
 )
 
-# 레시피 생성 버튼
+# 버튼 클릭 시 실행
 if st.button("레시피 생성하기") and ingredients.strip():
     with st.spinner("레시피를 생성 중입니다..."):
         prompt = f"""
@@ -41,14 +40,11 @@ if st.button("레시피 생성하기") and ingredients.strip():
 
         재료 목록: {ingredients}
         """
-
         try:
             model = genai.GenerativeModel(model_name="models/gemini-pro")
             response = model.generate_content(prompt)
-
-            result = response.text.strip()
             st.success("✅ 레시피 생성 완료!")
-            st.markdown(result)
+            st.markdown(response.text.strip())
 
         except Exception as e:
             st.error(f"❌ 레시피 생성 중 오류 발생:\n\n{e}")
