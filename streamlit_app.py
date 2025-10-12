@@ -1,5 +1,5 @@
 import streamlit as st
-import openai
+import google.generativeai as genai
 
 # ─────────────────────────────────────────────
 # Streamlit 앱 설정
@@ -11,13 +11,14 @@ st.write("입력한 재료로 만들 수 있는 요리와 단계별 레시피를
 # ─────────────────────────────────────────────
 # API 키 입력
 # ─────────────────────────────────────────────
-api_key = st.text_input("🔑 OpenAI API Key를 입력하세요:", type="password")
+api_key = st.text_input("🔑 Google Gemini API Key를 입력하세요:", type="password")
 
 if not api_key:
-    st.warning("OpenAI API 키를 입력해주세요.")
+    st.warning("Gemini API 키를 입력해주세요.")
     st.stop()
 
-client = openai.OpenAI(api_key=api_key)  # 최신 방식
+# Gemini 설정
+genai.configure(api_key=api_key)
 
 # ─────────────────────────────────────────────
 # 사용자 입력
@@ -50,17 +51,10 @@ if st.button("레시피 생성하기") and ingredients.strip():
         """
 
         try:
-            response = client.chat.completions.create(
-                model="gpt-3.5-turbo",   # 필요하면 gpt-4로 변경 가능
-                messages=[
-                    {"role": "system", "content": "당신은 최고의 요리 전문가입니다."},
-                    {"role": "user", "content": prompt}
-                ],
-                max_tokens=500,
-                temperature=0.7
-            )
+            model = genai.GenerativeModel("gemini-pro")
+            response = model.generate_content(prompt)
 
-            result = response.choices[0].message.content.strip()
+            result = response.text.strip()
             st.success("✅ 레시피 생성 완료!")
             st.markdown(result)
 
