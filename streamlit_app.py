@@ -1,5 +1,6 @@
 import streamlit as st
-import openai
+from transformers import pipeline, AutoTokenizer, AutoModelForCausalLM
+import torch
 
 # ─────────────────────────────────────────────
 # Streamlit 앱 설정
@@ -9,15 +10,16 @@ st.title("🍳 맞춤형 레시피 생성기")
 st.write("입력한 재료로 만들 수 있는 요리와 단계별 레시피를 생성해드립니다.")
 
 # ─────────────────────────────────────────────
-# API 키 입력
+# 로컬 모델 로딩 (최초 실행 시 시간이 좀 걸립니다)
 # ─────────────────────────────────────────────
-api_key = st.text_input("🔑 OpenAI API Key를 입력하세요:", type="password")
+@st.cache_resource
+def load_model():
+    model_name = "tiiuae/falcon-7b-instruct"  # 또는 "gpt2", "mistralai/Mistral-7B-Instruct-v0.1" 등
+    tokenizer = AutoTokenizer.from_pretrained(model_name)
+    model = AutoModelForCausalLM.from_pretrained(model_name, torch_dtype=torch.float16, device_map="auto")
+    return pipeline("text-generation", model=model, tokenizer=tokenizer)
 
-if not api_key:
-    st.warning("OpenAI API 키를 입력해주세요.")
-    st.stop()
-
-client = openai.OpenAI(api_key=api_key)  # 최신 방식
+text_generator = load_model()
 
 # ─────────────────────────────────────────────
 # 사용자 입력
@@ -50,17 +52,9 @@ if st.button("레시피 생성하기") and ingredients.strip():
         """
 
         try:
-            response = client.chat.completions.create(
-                model="gpt-3.5-turbo",   # 필요하면 gpt-4로 변경 가능
-                messages=[
-                    {"role": "system", "content": "당신은 최고의 요리 전문가입니다."},
-                    {"role": "user", "content": prompt}
-                ],
-                max_tokens=500,
-                temperature=0.7
-            )
-
-            result = response.choices[0].message.content.strip()
+            output = text_generator(prompt, max_new_tokens=300, temperature=0.7)[0]["generated_text"]
+            # 프롬프트 이후 텍스트만 추출
+            result = output[len(prompt):].strip()
             st.success("✅ 레시피 생성 완료!")
             st.markdown(result)
 
