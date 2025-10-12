@@ -22,29 +22,19 @@ ingredients = st.text_area(
 if st.button("레시피 생성하기") and ingredients.strip():
     with st.spinner("레시피를 생성 중입니다..."):
         prompt = f"""
-다음 재료들을 사용해서 만들 수 있는 간단한 요리를 추천해줘.
-요리 이름, 필요한 재료 목록, 그리고 조리법을 단계별로 설명해줘.
+다음 재료들로 만들 수 있는 간단한 요리를 추천해줘.
+요리 이름, 재료 목록, 그리고 단계별 조리법을 자세히 알려줘.
 
-형식은 다음과 같게 작성해줘:
-
-요리 이름: <요리명>
-
-재료: <재료 목록>
-
-조리법:
-1. ...
-2. ...
-3. ...
-
-재료 목록: {ingredients}
+재료: {ingredients}
 """
 
         try:
             output = text_generator(prompt, max_new_tokens=300, temperature=0.7)[0]["generated_text"]
+            # prompt 부분 제외
             result = output[len(prompt):].strip()
             st.success("✅ 레시피 생성 완료!")
             st.markdown(result)
         except Exception as e:
-            st.error(f"❌ 레시피 생성 중 오류 발생:\n\n{e}")
+            st.error(f"❌ 오류 발생:\n\n{e}")
 else:
-    st.info("재료를 입력한 후, '레시피 생성하기' 버튼을 눌러주세요.")
+    st.info("재료를 입력하고 '레시피 생성하기' 버튼을 눌러주세요.")
