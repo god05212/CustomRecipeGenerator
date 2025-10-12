@@ -21,20 +21,33 @@ ingredients = st.text_area(
 
 if st.button("레시피 생성하기") and ingredients.strip():
     with st.spinner("레시피를 생성 중입니다..."):
-        prompt = f"""
-다음 재료들로 만들 수 있는 간단한 요리를 추천해줘.
-요리 이름, 재료 목록, 그리고 단계별 조리법을 자세히 알려줘.
+        prompt = f"""다음 재료들로 만들 수 있는 간단한 요리를 추천하고,
+요리 이름, 재료 목록, 그리고 단계별 조리법을 차례대로 알려주세요.
 
 재료: {ingredients}
 """
 
         try:
-            output = text_generator(prompt, max_new_tokens=300, temperature=0.7)[0]["generated_text"]
-            # prompt 부분 제외
+            output = text_generator(prompt, max_new_tokens=150, temperature=0.6)[0]["generated_text"]
             result = output[len(prompt):].strip()
+
+            # 반복 제거 함수 적용
+            def clean_output(text):
+                lines = text.split('\n')
+                cleaned = []
+                prev = None
+                for line in lines:
+                    if line == prev:
+                        break
+                    cleaned.append(line)
+                    prev = line
+                return '\n'.join(cleaned)
+
+            clean_result = clean_output(result)
             st.success("✅ 레시피 생성 완료!")
-            st.markdown(result)
+            st.markdown(clean_result)
         except Exception as e:
             st.error(f"❌ 오류 발생:\n\n{e}")
+
 else:
     st.info("재료를 입력하고 '레시피 생성하기' 버튼을 눌러주세요.")
