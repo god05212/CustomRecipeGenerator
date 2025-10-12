@@ -42,7 +42,7 @@ if st.button("레시피 생성하기") and ingredients.strip():
 
         try:
             model = genai.GenerativeModel("models/gemini-2.5-pro")  # 적절한 모델명 사용
-            response = model.generate_content(prompt=prompt)
+            response = model.generate_content(prompt)
             result = response.text.strip()
 
             st.success("✅ 레시피 생성 완료!")
