@@ -1,4 +1,4 @@
-# StreamlitRecipeGenerator  
+# CustomRecipeGenerator  
 ## 맞춤형 레시피 생성기  
 **프로젝트 기간:** 2025/10/09(목) ~ 2025/10/14(화)  
 <br/>
